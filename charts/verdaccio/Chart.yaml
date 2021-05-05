@@ -1,5 +1,5 @@
 apiVersion: v2
-description: A lightweight, private NPM proxy registry for GKE
+description: A lightweight private node.js proxy registry
 name: verdaccio-gke-charts
 version: 0.1.2
 appVersion: 5.0.4
@@ -12,6 +12,8 @@ sources:
 keywords:
   - npm
   - registry
+  - yarn
+  - pnpm
   - javascript
   - nodejs
 maintainers:
