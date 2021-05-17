@@ -9,7 +9,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  annotations: {}
+  type: ClusterIP
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
   clusterIP: ""
 
   ## List of IP addresses at which the service is available
@@ -19,9 +21,8 @@ service:
 
   loadBalancerIP: ""
   loadBalancerSourceRanges: []
-  port: 4873
-  type: ClusterIP
-  # nodePort: 31873
+  port: 80
+  targetPort: 4873
 
 ## Node labels for pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -61,18 +62,16 @@ ingress:
   # Set to true if you are on an old cluster where apiVersion extensions/v1beta1 is required
   useExtensionsApi: false
   paths:
-    - /
-  # Use this to define, ALB ingress's actions annotation based routing. Ex: for ssl-redirect
-  # Ref: https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/guide/tasks/ssl_redirect/
+    - /*
+#  hosts:
+#    - registry.example.com
+  annotations:
+#    kubernetes.io/ingress.global-static-ip-name: your-registry-static-ip-name
+#    networking.gke.io/managed-certificates: your-managed-certificate-name
+    kubernetes.io/ingress.class: "gce"
   extraPaths: []
 # hosts:
 #   - npm.blah.com
-# annotations:
-#   kubernetes.io/ingress.class: nginx
-# tls:
-#   - secretName: secret
-#     hosts:
-#       - npm.blah.com
 
 ## Service account
 serviceAccount:
@@ -86,83 +85,97 @@ serviceAccount:
 
 # Extra Environment Values - allows yaml definitions
 extraEnvVars:
+  - name: NODE_ENV
+    value: production
 #  - name: VALUE_FROM_SECRET
 #    valueFrom:
 #      secretKeyRef:
 #        name: secret_name
 #        key: secret_key
-#  - name: REGULAR_VAR
-#    value: ABC
 
 # Extra Init Containers - allows yaml definitions
 extraInitContainers: []
 
 configMap: |
-  # This is the config file used for the docker images.
-  # It allows all users to do anything, so don't use it on production systems.
-  #
-  # Do not configure host and port under `listen` in this file
-  # as it will be ignored when using docker.
-  # see https://github.com/verdaccio/verdaccio/blob/master/docs/docker.md#docker-and-custom-port-configuration
-  #
-  # Look here for more config file examples:
-  # https://github.com/verdaccio/verdaccio/tree/master/conf
-  #
+  config.yaml: |-
+    # This is the config file used for the docker images.
+    # It allows all users to do anything, so don't use it on production systems.
+    #
+    # Do not configure host and port under `listen` in this file
+    # as it will be ignored when using docker.
+    # see https://github.com/verdaccio/verdaccio/blob/master/docs/docker.md#docker-and-custom-port-configuration
+    #
+    # Look here for more config file examples:
+    # https://github.com/papezt/verdaccio-examples/
+    #
 
-  # path to a directory with all packages
-  storage: /verdaccio/storage/data
+    # path to a directory with all packages
+    storage: /verdaccio/storage/data
 
-  web:
-    # WebUI is enabled as default, if you want disable it, just uncomment this line
-    #enable: false
-    title: Verdaccio
+    web:
+      # WebUI is enabled as default, if you want disable it, just uncomment this line
+      #enable: false
+      title: Verdaccio
+      gravatar: true
+      darkMode: true
 
-  auth:
-    htpasswd:
-      file: /verdaccio/storage/htpasswd
-      # Maximum amount of users allowed to register, defaults to "+infinity".
-      # You can set this to -1 to disable registration.
-      #max_users: 1000
+    auth:
+      htpasswd:
+        file: /verdaccio/storage/htpasswd
+        # Maximum amount of users allowed to register, defaults to "+infinity".
+        # You can set this to -1 to disable registration.
+        #max_users: 1000
 
-  # a list of other known repositories we can talk to
-  uplinks:
-    npmjs:
-      url: https://registry.npmjs.org/
-      agent_options:
-        keepAlive: true
-        maxSockets: 40
-        maxFreeSockets: 10
+    security:
+      api:
+        legacy: false
+        jwt:
+          sign: {}
+          verify: {}
 
-  packages:
-    '@*/*':
-      # scoped packages
-      access: $all
-      publish: $authenticated
-      proxy: npmjs
+    # a list of other known repositories we can talk to
+    uplinks:
+      npmjs:
+        url: https://registry.npmjs.org/
+        agent_options:
+          keepAlive: true
+          maxSockets: 40
+          maxFreeSockets: 10
 
-    '**':
-      # allow all users (including non-authenticated users) to read and
-      # publish all packages
-      #
-      # you can specify usernames/groupnames (depending on your auth plugin)
-      # and three keywords: "$all", "$anonymous", "$authenticated"
-      access: $all
+    packages:
+      '@*/*':
+        # scoped packages
+        access: $authenticated
+        publish: $authenticated
+        proxy: npmjs
 
-      # allow all known users to publish packages
-      # (anyone can register by default, remember?)
-      publish: $authenticated
+      '**':
+        # Only allow authenticated users to read and publish packages.
+        #
+        # you can specify usernames/groupnames (depending on your auth plugin)
+        # and three keywords: "$all", "$anonymous", "$authenticated"
+        access: $authenticated
+        publish: $authenticated
+        # if package is not available locally, proxy requests to 'npmjs' registry
+        proxy: npmjs
 
-      # if package is not available locally, proxy requests to 'npmjs' registry
-      proxy: npmjs
+    # enables the `npm audit` command
+    middlewares:
+      audit:
+        enabled: true
 
-  # To use `npm audit` uncomment the following section
-  middlewares:
-    audit:
-      enabled: true
+    # log settings
+    logs: {type: stdout, format: json, level: http}
+    # prettier, but can slow down production performance
+    # logs: {type: stdout, format: pretty, level: http}
+    # logs: {type: file, path: verdaccio.log, level: info}
 
-  # log settings
-  logs: {type: stdout, format: pretty, level: http}
-  # logs: {type: file, path: verdaccio.log, level: info}
+    experiments:
+    # enables the `npm token` command
+      token: true
+
+  #htpasswd: |-
+  #  username:$apr1$1yx4o9cm$mrXuql165iMOqzOj0rK0O1
 
 persistence:
   enabled: true

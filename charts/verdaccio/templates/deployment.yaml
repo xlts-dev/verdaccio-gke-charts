@@ -40,16 +40,16 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 4873
-              name: http
+              name: verdaccio-port
           livenessProbe:
             httpGet:
               path: /-/ping
-              port: http
+              port: verdaccio-port
             initialDelaySeconds: 5
           readinessProbe:
             httpGet:
               path: /-/ping
-              port: http
+              port: verdaccio-port
             initialDelaySeconds: 5
           {{- with .Values.securityContext }}
           securityContext:

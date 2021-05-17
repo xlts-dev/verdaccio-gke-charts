@@ -1,12 +1,12 @@
 ## Contributions Guidelines
 
-Welcome to the Verdaccio Chart repository.
+Welcome to the Verdaccio GKE Chart repository.
 
-If you are willing the contribute, these are the must-known:
+If you are willing to contribute, these are the must-known:
 
 - **Update documentation**: The readme is the main source of documentation, please if you add or modify any feature
   is a mandatory step.
-- **Bum up**: Every new feature/fix requires a bump up (unfortunatelly is not automated).
+- **Bum up**: Every new feature/fix requires a bump up (unfortunately is not automated).
 - **Test are green**: The projects rely on `helm/chart-testing-action`, it has to be green before merge.
 - **Document your PR**: What motivates the change and explain your solution is a nice to have, share knowledge would speed up the merge.
 - **Breaking changes**: Any breaking change must bump up as major. What's a breaking change? eg: Verdaccio docker image bump up to major,
