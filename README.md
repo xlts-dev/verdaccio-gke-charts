@@ -1,12 +1,14 @@
+# Verdaccio Charts for GKE
+
 [Verdaccio](https://www.verdaccio.org) is a lightweight private
 [NPM](https://www.npmjs.com) proxy registry.
 
 ## TL;DR;
 
-```
-$ helm repo add verdaccio https://charts.verdaccio.org
-$ helm repo update
-$ helm install verdaccio/verdaccio
+```bash
+helm repo add verdaccio-gke-charts https://xlts-dev.github.io/verdaccio-gke-charts
+helm repo update
+helm install verdaccio-gke-charts/verdaccio-gke-charts
 ```
 
 ## Introduction
@@ -17,15 +19,23 @@ deployment on a [Kubernetes](https://kubernetes.io) cluster using the
 
 ## Prerequisites
 
-- Kubernetes 1.7+ with Beta APIs enabled
-- PV provisioner support in the underlying infrastructure
+1. Create a [Google CLoud Project](https://console.cloud.google.com/)
+1. Install the [gcloud SDK and CLI](https://cloud.google.com/sdk/docs/install) or use the
+   [Cloud Shell](https://cloud.google.com/shell)
+1. If using the CLI outside of Cloud Shell, run `gcloud config set project your-project`
+1. [Create a GKE cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-an-autopilot-cluster)
+1. Pick the cluster to work with using a command like
+    - `gcloud container clusters get-credentials verdaccio-autopilot-cluster --region=us-central1`
+1. Create a namespace (recommended)
+    - `kubectl create namespace registry`
+1. If not in the Cloud Shell, [Install Helm](https://helm.sh/docs/intro/install/) v3+
 
 ## Installing the Chart
 
 ### Add repository
 
-```
-helm repo add verdaccio https://charts.verdaccio.org
+```bash
+helm repo add verdaccio-gke-charts https://xlts-dev.github.io/verdaccio-gke-charts
 ```
 
 ### Install Verdaccio chart
@@ -34,38 +44,36 @@ In this example we use `npm` as release name:
 
 ```bash
 # Helm v3+
-helm install npm verdaccio/verdaccio
+helm install npm --namespace registry verdaccio-gke-charts/verdaccio-gke-charts
 ```
 
-### Deploy a specific version
+### Deploy a specific Verdaccio version
 
 ```bash
-# Helm v3+
-helm install npm --set image.tag=4.6.2 verdaccio/verdaccio
+helm install npm --set image.tag=4.6.2 verdaccio-gke-charts/verdaccio-gke-charts
 ```
 
 ### Upgrading Verdaccio
 
 ```bash
-helm upgrade npm verdaccio/verdaccio
+helm upgrade npm --namespace registry verdaccio-gke-charts/verdaccio-gke-charts
 ```
 
-The command deploys Verdaccio on the Kubernetes cluster in the default
+The command deploys Verdaccio on the GKE cluster in the default
 configuration. The [configuration](#configuration) section lists the parameters
 that can be configured during installation.
 
-> **Tip**: List all releases using `helm list`
+> **Tip**: List all releases using `helm list`.
 
 ## Uninstalling the Chart
 
 To uninstall/delete the `npm` deployment:
 
 ```bash
-# Helm v3+
-helm uninstall npm
+helm uninstall npm --namespace registry
 ```
 
-The command removes all the Kubernetes components associated with the chart and
+The command removes all the GKE and GCE components associated with the chart and
 deletes the release.
 
 ## Configuration
@@ -102,8 +110,9 @@ and their default values.
 | `service.externalIPs`              | Service external IP addresses                                   | `[]`                           |
 | `service.loadBalancerIP`           | IP address to assign to load balancer (if supported)            | `""`                           |
 | `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported) | `[]`                           |
-| `service.port`                     | Service port to expose                                          | `4873`                         |
-| `service.nodePort`                 | Service port to expose                                          | none                           |
+| `service.port`                     | Service port to expose                                          | `80`                           |
+| `service.targetPort`               | Container port to target                                        | `4873`                         |
+| `service.nodePort`                 | Service port to expose when the type is NodePort                | none                           |
 | `service.type`                     | Type of service to create                                       | `ClusterIP`                    |
 | `serviceAccount.create`            | Create service account                                          | `false`                        |
 | `serviceAccount.name`              | Service account Name                                            | none                           |
@@ -117,23 +126,19 @@ and their default values.
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```bash
-# Helm v3+
-$ helm install my-release \
-  --set service.type=LoadBalancer \
-    verdaccio/verdaccio
+helm install my-release --set service.type=LoadBalancer verdaccio-gke-charts/verdaccio-gke-charts
 ```
 
-The above command sets the service type LoadBalancer.
+The above command sets the service type `LoadBalancer`.
 
 Alternatively, a YAML file that specifies the values for the above parameters
 can be provided while installing the chart. For example,
 
 ```bash
-# Helm v3+
-$ helm install npm -f values.yaml verdaccio/verdaccio
+helm install my-release -f values.yaml verdaccio-gke-charts/verdaccio-gke-charts
 ```
 
-> **Tip**: You can use the default [values.yaml](charts/verdaccio/values.yaml)
+> **Tip**: You can use the default [values.yaml](charts/verdaccio/values.yaml) as a starting point.
 
 ### Custom ConfigMap
 
@@ -161,8 +166,7 @@ It is possible to mount several volumes using `Persistence.volumes` and
 1. Install the chart
 
 ```bash
-# Helm v3+
-$ helm install npm \
+helm install npm \
     --set persistence.existingClaim=PVC_NAME \
-    verdaccio/verdaccio
+    verdaccio-gke-charts/verdaccio-gke-charts
 ```
