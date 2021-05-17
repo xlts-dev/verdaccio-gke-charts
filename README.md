@@ -1,14 +1,4 @@
-# Verdaccio Charts (Helm)
-
-![verdaccio logo](https://cdn.verdaccio.dev/readme/verdaccio@2x.png)
-
-[Verdaccio](https://verdaccio.org/) is a simple, **zero-config-required local private npm registry**.
-No need for an entire database just to get started! Verdaccio comes out of the box with
-**its own tiny database**, and the ability to proxy other registries (eg. npmjs.org),
-caching the downloaded modules along the way.
-For those looking to extend their storage capabilities, Verdaccio
-**supports various community-made plugins to hook into services such as Amazon's s3,
-Google Cloud Storage** or create your own plugin.
+# Verdaccio Chart for GKE
 
 [Verdaccio](https://www.verdaccio.org) is a lightweight private
 [NPM](https://www.npmjs.com) proxy registry.
@@ -21,13 +11,11 @@ $ helm repo update
 $ helm install verdaccio/verdaccio
 ```
 
-> ⚠️ If you are using **stable/verdaccio** chart, [be aware is deprecated](https://github.com/helm/charts/pull/21929), forward all new PR and or issues to this repository.
-
 ## Introduction
 
 This chart bootstraps a [Verdaccio](https://github.com/verdaccio/verdaccio)
 deployment on a [Kubernetes](https://kubernetes.io) cluster using the
-[Helm](https://helm.sh) package manager.
+[Helm](https://helm.sh) package manager on [GKE](https://cloud.google.com/kubernetes-engine).
 
 ## Prerequisites
 
@@ -42,16 +30,20 @@ deployment on a [Kubernetes](https://kubernetes.io) cluster using the
 helm repo add verdaccio https://charts.verdaccio.org
 ```
 
+### Install Verdaccio chart
+
 In this example we use `npm` as release name:
 
 ```bash
-helm install --name npm verdaccio/verdaccio
+# Helm v3+
+helm install npm verdaccio/verdaccio
 ```
 
 ### Deploy a specific version
 
 ```bash
-helm install --name npm --set image.tag=4.6.2 verdaccio/verdaccio
+# Helm v3+
+helm install npm --set image.tag=4.6.2 verdaccio/verdaccio
 ```
 
 ### Upgrading Verdaccio
@@ -70,6 +62,109 @@ that can be configured during installation.
 
 To uninstall/delete the `npm` deployment:
 
+```bash
+# Helm v3+
+helm uninstall npm
 ```
-$ helm delete npm
+
+The command removes all the Kubernetes components associated with the chart and
+deletes the release.
+
+## Configuration
+
+The following table lists the configurable parameters of the Verdaccio chart,
+and their default values.
+
+| Parameter                          | Description                                                     | Default                        |
+| ---------------------------------- | --------------------------------------------------------------- | ------------------------------ |
+| `affinity`                         | Affinity for pod assignment                                     | `{}`                           |
+| `existingConfigMap`                | Name of custom ConfigMap to use                                 | `false`                        |
+| `image.pullPolicy`                 | Image pull policy                                               | `IfNotPresent`                 |
+| `image.pullSecrets`                | Image pull secrets                                              | `[]`                           |
+| `image.repository`                 | Verdaccio container image repository                            | `verdaccio/verdaccio`          |
+| `image.tag`                        | Verdaccio container image tag                                   | `5.0.4`                        |
+| `nodeSelector`                     | Node labels for pod assignment                                  | `{}`                           |
+| `tolerations`                      | List of node taints to tolerate                                 | `[]`                           |
+| `persistence.accessMode`           | PVC Access Mode for Verdaccio volume                            | `ReadWriteOnce`                |
+| `persistence.enabled`              | Enable persistence using PVC                                    | `true`                         |
+| `persistence.existingClaim`        | Use existing PVC                                                | `nil`                          |
+| `persistence.mounts`               | Additional mounts                                               | `nil`                          |
+| `persistence.size`                 | PVC Storage Request for Verdaccio volume                        | `8Gi`                          |
+| `persistence.storageClass`         | PVC Storage Class for Verdaccio volume                          | `nil`                          |
+| `persistence.selector`             | Selector to match an existing Persistent Volume                 | `{}` (evaluated as a template) |
+| `persistence.volumes`              | Additional volumes                                              | `nil`                          |
+| `podLabels`                        | Additional pod labels                                           | `{}` (evaluated as a template) |
+| `podAnnotations`                   | Annotations to add to each pod                                  | `{}`                           |
+| `priorityClass.enabled`            | Enable specifying pod priorityClassName                         | `false`                        |
+| `priorityClass.name`               | PriorityClassName to be specified in pod spec                   | `""`                           |
+| `replicaCount`                     | Desired number of pods                                          | `1`                            |
+| `resources`                        | CPU/Memory resource requests/limits                             | `{}`                           |
+| `service.annotations`              | Annotations to add to service                                   | none                           |
+| `service.clusterIP`                | IP address to assign to service                                 | `""`                           |
+| `service.externalIPs`              | Service external IP addresses                                   | `[]`                           |
+| `service.loadBalancerIP`           | IP address to assign to load balancer (if supported)            | `""`                           |
+| `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported) | `[]`                           |
+| `service.port`                     | Service port to expose                                          | `4873`                         |
+| `service.nodePort`                 | Service port to expose                                          | none                           |
+| `service.type`                     | Type of service to create                                       | `ClusterIP`                    |
+| `serviceAccount.create`            | Create service account                                          | `false`                        |
+| `serviceAccount.name`              | Service account Name                                            | none                           |
+| `extraEnvVars`                     | Define environment variables to be passed to the container      | `{}`                           |
+| `extraInitContainers`              | Define additional initContainers to be added to the deployment  | `[]`                           |
+| `securityContext`                  | Define Container Security Context                               | `{runAsUser=10001}`            |
+| `podSecurityContext`               | Define Pod Security Context                                     | `{fsGroup=101}`                |
+| `nameOverride`                     | Set resource name override                                      | `""`                           |
+| `fullnameOverride`                 | Set resource fullname override                                  | `""`                           |
+
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
+
+```bash
+# Helm v3+
+$ helm install my-release \
+  --set service.type=LoadBalancer \
+    verdaccio/verdaccio
+```
+
+The above command sets the service type LoadBalancer.
+
+Alternatively, a YAML file that specifies the values for the above parameters
+can be provided while installing the chart. For example,
+
+```bash
+# Helm v3+
+$ helm install npm -f values.yaml verdaccio/verdaccio
+```
+
+> **Tip**: You can use the default [values.yaml](charts/verdaccio/values.yaml)
+
+### Custom ConfigMap
+
+When creating a new chart with this chart as a dependency, CustomConfigMap can
+be used to override the default config.yaml provided. It also allows for
+providing additional configuration files that will be copied into
+`/verdaccio/conf`. In the parent chart's values.yaml, set the value to true and
+provide the file `templates/config.yaml` for your use case.
+
+### Persistence
+
+The Verdaccio image stores persistence under `/verdaccio/storage` path of the
+container. A dynamically managed Persistent Volume Claim is used to keep the
+data across deployments, by default. This is known to work in GCE, AWS, and
+minikube.
+Alternatively, a previously configured Persistent Volume Claim can be used.
+
+It is possible to mount several volumes using `Persistence.volumes` and
+`Persistence.mounts` parameters.
+
+#### Existing PersistentVolumeClaim
+
+1. Create the PersistentVolume
+1. Create the PersistentVolumeClaim
+1. Install the chart
+
+```bash
+# Helm v3+
+$ helm install npm \
+    --set persistence.existingClaim=PVC_NAME \
+    verdaccio/verdaccio
 ```
