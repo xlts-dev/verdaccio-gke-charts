@@ -1,4 +1,4 @@
-# Verdaccio
+# Verdaccio Charts for GKE
 
 [Verdaccio](https://www.verdaccio.org) is a lightweight private
 [NPM](https://www.npmjs.com) proxy registry.
@@ -15,7 +15,7 @@ $ helm install verdaccio/verdaccio
 
 This chart bootstraps a [Verdaccio](https://github.com/verdaccio/verdaccio)
 deployment on a [Kubernetes](https://kubernetes.io) cluster using the
-[Helm](https://helm.sh) package manager.
+[Helm](https://helm.sh) package manager on [GKE](https://cloud.google.com/kubernetes-engine).
 
 ## Prerequisites
 

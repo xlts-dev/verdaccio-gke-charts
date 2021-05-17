@@ -3,5 +3,5 @@ remote: origin
 chart-dirs:
   - charts
 chart-repos:
-  - verdaccio-gke=https://xlts-dev.github.io/verdaccio-gke-charts/
+  - verdaccio-gke-charts=https://xlts-dev.github.io/verdaccio-gke-charts/
 helm-extra-args: --timeout 600s

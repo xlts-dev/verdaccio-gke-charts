@@ -1,6 +1,6 @@
 apiVersion: v2
 description: A lightweight, private NPM proxy registry for GKE
-name: verdaccio-gke
+name: verdaccio-gke-charts
 version: 0.0.1
 appVersion: 5.0.4
 home: https://github.com/xlts-dev/verdaccio-gke-charts

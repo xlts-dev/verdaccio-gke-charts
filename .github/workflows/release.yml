@@ -1,4 +1,4 @@
-name: Release Verdaccio Charts
+name: Release Verdaccio GKE Charts
 
 on:
   push:
