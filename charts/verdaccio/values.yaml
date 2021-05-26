@@ -61,6 +61,7 @@ ingress:
   enabled: false
   # Set to true if you are on an old cluster where apiVersion extensions/v1beta1 is required
   useExtensionsApi: false
+  # For nginx, contour, and other non-gke/gce ingress controllers, remove the * below.
   paths:
     - /*
 #  hosts:
@@ -68,6 +69,7 @@ ingress:
   annotations:
 #    kubernetes.io/ingress.global-static-ip-name: your-registry-static-ip-name
 #    networking.gke.io/managed-certificates: your-managed-certificate-name
+    # Use gce for container-native load balancing, or use other ingress controllers like nginx or contour.
     kubernetes.io/ingress.class: "gce"
   extraPaths: []
 # hosts:
