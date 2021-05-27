@@ -26,6 +26,7 @@ spec:
         paths:
           {{- range $ingressExtraPaths }}
           - path: {{ default "/" .path | quote }}
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ default $serviceName .service }}
@@ -34,6 +35,7 @@ spec:
           {{- end }}
           {{- range $p := $paths }}
           - path: {{ $p }}
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ $serviceName }}
@@ -46,6 +48,7 @@ spec:
         paths:
     {{- range $p := $paths }}
           - path: {{ $p }}
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ $serviceName }}
