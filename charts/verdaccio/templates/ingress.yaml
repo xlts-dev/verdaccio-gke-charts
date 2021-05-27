@@ -27,14 +27,18 @@ spec:
           {{- range $ingressExtraPaths }}
           - path: {{ default "/" .path | quote }}
             backend:
-              serviceName: {{ default $serviceName .service }}
-              servicePort: {{ default $servicePort .port }}
+              service:
+                name: {{ default $serviceName .service }}
+                port:
+                  number: {{ default $servicePort .port }}
           {{- end }}
           {{- range $p := $paths }}
           - path: {{ $p }}
             backend:
-              serviceName: {{ $serviceName }}
-              servicePort: {{ $servicePort }}
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
           {{- end -}}
     {{- end -}}
     {{- else }}
@@ -43,8 +47,10 @@ spec:
     {{- range $p := $paths }}
           - path: {{ $p }}
             backend:
-              serviceName: {{ $serviceName }}
-              servicePort: {{ $servicePort }}
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
     {{- end -}}
     {{- end -}}
   {{- if .Values.ingress.tls }}
