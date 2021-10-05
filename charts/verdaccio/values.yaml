@@ -59,9 +59,7 @@ resources: {}
 
 ingress:
   enabled: false
-  # Set to true if you are on an old cluster where apiVersion extensions/v1beta1 is required
-  useExtensionsApi: false
-  # For nginx, contour, and other non-gke/gce ingress controllers, remove the * below.
+  className: ""
   paths:
     - /*
 #  hosts:
@@ -171,10 +169,6 @@ configMap: |
     # prettier, but can slow down production performance
     # logs: {type: stdout, format: pretty, level: http}
     # logs: {type: file, path: verdaccio.log, level: info}
-
-    experiments:
-    # enables the `npm token` command
-      token: true
 
   #htpasswd: |-
   #  username:$apr1$1yx4o9cm$mrXuql165iMOqzOj0rK0O1
