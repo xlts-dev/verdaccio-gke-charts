@@ -1,6 +1,6 @@
 image:
   repository: verdaccio/verdaccio
-  tag: 5.1.1
+  tag: 5.1.6
   pullPolicy: IfNotPresent
   pullSecrets: []
     # - dockerhub-secret
@@ -16,7 +16,6 @@ service:
 
   ## List of IP addresses at which the service is available
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
-  ##
   externalIPs: []
 
   loadBalancerIP: ""
@@ -26,12 +25,10 @@ service:
 
 ## Node labels for pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
 nodeSelector: {}
 
 ## Affinity for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
-##
 affinity: {}
 
 ## Tolerations for nodes
@@ -39,12 +36,10 @@ tolerations: []
 
 ## Additional pod labels
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
-##
 podLabels: {}
 
 ## Additional pod annotations
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-##
 podAnnotations: {}
 
 replicaCount: 1
@@ -62,16 +57,20 @@ ingress:
   className: ""
   paths:
     - /*
-#  hosts:
-#    - registry.example.com
+  # Use this to define, ALB ingress's actions annotation based routing. Ex: for ssl-redirect
+  # Ref: https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/guide/tasks/ssl_redirect/
+  extraPaths: []
+# hosts:
+#   - npm.blah.com
   annotations:
 #    kubernetes.io/ingress.global-static-ip-name: your-registry-static-ip-name
 #    networking.gke.io/managed-certificates: your-managed-certificate-name
     # Use gce for container-native load balancing, or use other ingress controllers like nginx or contour.
     kubernetes.io/ingress.class: "gce"
-  extraPaths: []
-# hosts:
-#   - npm.blah.com
+# tls:
+#   - secretName: secret
+#     hosts:
+#       - npm.blah.com
 
 ## Service account
 serviceAccount:
