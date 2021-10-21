@@ -81,52 +81,63 @@ deletes the release.
 The following table lists the configurable parameters of the Verdaccio chart,
 and their default values.
 
-| Parameter                          | Description                                                     | Default                        |
-| ---------------------------------- | --------------------------------------------------------------- | ------------------------------ |
-| `affinity`                         | Affinity for pod assignment                                     | `{}`                           |
-| `existingConfigMap`                | Name of custom ConfigMap to use                                 | `false`                        |
-| `image.pullPolicy`                 | Image pull policy                                               | `IfNotPresent`                 |
-| `image.pullSecrets`                | Image pull secrets                                              | `[]`                           |
-| `image.repository`                 | Verdaccio container image repository                            | `verdaccio/verdaccio`          |
-| `image.tag`                        | Verdaccio container image tag                                   | `5.1.6`                        |
-| `nodeSelector`                     | Node labels for pod assignment                                  | `{}`                           |
-| `tolerations`                      | List of node taints to tolerate                                 | `[]`                           |
-| `persistence.accessMode`           | PVC Access Mode for Verdaccio volume                            | `ReadWriteOnce`                |
-| `persistence.enabled`              | Enable persistence using PVC                                    | `true`                         |
-| `persistence.existingClaim`        | Use existing PVC                                                | `nil`                          |
-| `persistence.mounts`               | Additional mounts                                               | `nil`                          |
-| `persistence.size`                 | PVC Storage Request for Verdaccio volume                        | `8Gi`                          |
-| `persistence.storageClass`         | PVC Storage Class for Verdaccio volume                          | `nil`                          |
-| `persistence.selector`             | Selector to match an existing Persistent Volume                 | `{}` (evaluated as a template) |
-| `persistence.volumes`              | Additional volumes                                              | `nil`                          |
-| `podLabels`                        | Additional pod labels                                           | `{}` (evaluated as a template) |
-| `podAnnotations`                   | Annotations to add to each pod                                  | `{}`                           |
-| `priorityClass.enabled`            | Enable specifying pod priorityClassName                         | `false`                        |
-| `priorityClass.name`               | PriorityClassName to be specified in pod spec                   | `""`                           |
-| `replicaCount`                     | Desired number of pods                                          | `1`                            |
-| `resources`                        | CPU/Memory resource requests/limits                             | `{}`                           |
-| `service.annotations`              | Annotations to add to service                                   | none                           |
-| `service.clusterIP`                | IP address to assign to service                                 | `""`                           |
-| `service.externalIPs`              | Service external IP addresses                                   | `[]`                           |
-| `service.loadBalancerIP`           | IP address to assign to load balancer (if supported)            | `""`                           |
-| `service.loadBalancerSourceRanges` | List of IP CIDRs allowed access to load balancer (if supported) | `[]`                           |
-| `service.port`                     | Service port to expose                                          | `80`                           |
-| `service.targetPort`               | Container port to target                                        | `4873`                         |
-| `service.type`                     | Type of service to create                                       | `ClusterIP`                    |
-| `serviceAccount.create`            | Create service account                                          | `false`                        |
-| `serviceAccount.name`              | Service account Name                                            | none                           |
-| `extraEnvVars`                     | Define environment variables to be passed to the container      | `{}`                           |
-| `extraInitContainers`              | Define additional initContainers to be added to the deployment  | `[]`                           |
-| `securityContext`                  | Define Container Security Context                               | `{runAsUser=10001}`            |
-| `podSecurityContext`               | Define Pod Security Context                                     | `{fsGroup=101}`                |
-| `nameOverride`                     | Set resource name override                                      | `""`                           |
-| `fullnameOverride`                 | Set resource fullname override                                  | `""`                           |
-| `ingress.enabled`                  | Enable/Disable Ingress                                          | `false`                        |
-| `ingress.className`                | Ingress Class Name (k8s `>=1.18` required)                      | `""`                           |
-| `ingress.annotations`              | Ingress Annotations                                             | `{}`                           |
-| `ingress.hosts`                    | List of Ingress Hosts                                           | `[]`                           |
-| `ingress.paths`                    | List of Ingress Paths                                           | `["/"]`                        |
-| `ingress.extraPaths`               | List of extra Ingress Paths                                     | `[]`                           |
+| Parameter                            | Description                                                     | Default                        |
+| ------------------------------------ | --------------------------------------------------------------- | ------------------------------ |
+| `affinity`                           | Affinity for pod assignment                                     | `{}`                           |
+| `existingConfigMap`                  | Name of custom ConfigMap to use                                 | `false`                        |
+| `image.pullPolicy`                   | Image pull policy                                               | `IfNotPresent`                 |
+| `image.pullSecrets`                  | Image pull secrets                                              | `[]`                           |
+| `image.repository`                   | Verdaccio container image repository                            | `verdaccio/verdaccio`          |
+| `image.tag`                          | Verdaccio container image tag                                   | `5.1.6`                        |
+| `nodeSelector`                       | Node labels for pod assignment                                  | `{}`                           |
+| `tolerations`                        | List of node taints to tolerate                                 | `[]`                           |
+| `persistence.accessMode`             | PVC Access Mode for Verdaccio volume                            | `ReadWriteOnce`                |
+| `persistence.enabled`                | Enable persistence using PVC                                    | `true`                         |
+| `persistence.existingClaim`          | Use existing PVC                                                | `nil`                          |
+| `persistence.mounts`                 | Additional mounts                                               | `nil`                          |
+| `persistence.size`                   | PVC Storage Request for Verdaccio volume                        | `8Gi`                          |
+| `persistence.storageClass`           | PVC Storage Class for Verdaccio volume                          | `nil`                          |
+| `persistence.selector`               | Selector to match an existing Persistent Volume                 | `{}` (evaluated as a template) |
+| `persistence.volumes`                | Additional volumes                                              | `nil`                          |
+| `podLabels`                          | Additional pod labels                                           | `{}` (evaluated as a template) |
+| `podAnnotations`                     | Annotations to add to each pod                                  | `{}`                           |
+| `priorityClass.enabled`              | Enable specifying pod priorityClassName                         | `false`                        |
+| `priorityClass.name`                 | PriorityClassName to be specified in pod spec                   | `""`                           |
+| `replicaCount`                       | Desired number of pods                                          | `1`                            |
+| `resources`                          | CPU/Memory resource requests/limits                             | `{}`                           |
+| `service.annotations`                | Annotations to add to service                                   | none                           |
+| `service.clusterIP`                  | IP address to assign to service                                 | `""`                           |
+| `service.externalIPs`                | Service external IP addresses                                   | `[]`                           |
+| `service.loadBalancerIP`             | IP address to assign to load balancer (if supported)            | `""`                           |
+| `service.loadBalancerSourceRanges`   | List of IP CIDRs allowed access to load balancer (if supported) | `[]`                           |
+| `service.port`                       | Service port to expose                                          | `80`                           |
+| `service.targetPort`                 | Container port to target                                        | `4873`                         |
+| `service.type`                       | Type of service to create                                       | `ClusterIP`                    |
+| `serviceAccount.create`              | Create service account                                          | `false`                        |
+| `serviceAccount.name`                | Service account Name                                            | none                           |
+| `extraEnvVars`                       | Define environment variables to be passed to the container      | `{}`                           |
+| `extraInitContainers`                | Define additional initContainers to be added to the deployment  | `[]`                           |
+| `securityContext`                    | Define Container Security Context                               | `{runAsUser=10001}`            |
+| `podSecurityContext`                 | Define Pod Security Context                                     | `{fsGroup=101}`                |
+| `nameOverride`                       | Set resource name override                                      | `""`                           |
+| `fullnameOverride`                   | Set resource fullname override                                  | `""`                           |
+| `ingress.enabled`                    | Enable/Disable Ingress                                          | `false`                        |
+| `ingress.className`                  | Ingress Class Name (k8s `>=1.18` required)                      | `""`                           |
+| `ingress.annotations`                | Ingress Annotations                                             | `{}`                           |
+| `ingress.hosts`                      | List of Ingress Hosts                                           | `[]`                           |
+| `ingress.paths`                      | List of Ingress Paths                                           | `["/"]`                        |
+| `ingress.extraPaths`                 | List of extra Ingress Paths                                     | `[]`                           |
+| `readinessProbe.initialDelaySeconds` | How long after startup before liveness probe is initiated       | `5`                            |
+| `readinessProbe.timeoutSeconds`      | Number of seconds after which the probe times out               | `1`                            |
+| `readinessProbe.periodSeconds`       | How often to perform the probe after startup                    | `10`                           |
+| `readinessProbe.failureThreshold`    | Min failures for the probe to be considered failed              | `3`                            |
+| `readinessProbe.successThreshold`    | Min successes for the probe to be considered successful         | `1`                            |
+| `livenessProbe.initialDelaySeconds`  | How long after startup before readiness probe is initiated      | `5`                            |
+| `livenessProbe.timeoutSeconds`       | Number of seconds after which the probe times out               | `1`                            |
+| `livenessProbe.periodSeconds`        | How often to perform the probe after startup                    | `10`                           |
+| `livenessProbe.failureThreshold`     | Min failures for the probe to be considered failed              | `3`                            |
+| `livenessProbe.successThreshold`     | Min successes for the probe to be considered successful         | `1`                            |
+
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
