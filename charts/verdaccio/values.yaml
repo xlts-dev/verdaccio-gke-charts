@@ -23,6 +23,24 @@ service:
   port: 80
   targetPort: 4873
 
+## Overrides for the readiness probe, do not override the `httpGet` field as it is already configured
+## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+readinessProbe:
+  initialDelaySeconds: 5
+  timeoutSeconds: 1
+  periodSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
+## Overrides for the liveness probe, do not override the `httpGet` field as it is already configured
+## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+livenessProbe:
+  initialDelaySeconds: 5
+  timeoutSeconds: 1
+  periodSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
 ## Node labels for pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
 nodeSelector: {}
