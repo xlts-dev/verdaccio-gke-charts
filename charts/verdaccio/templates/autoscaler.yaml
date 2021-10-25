@@ -1,0 +1,19 @@
+{{- if .Values.autoscaler.enabled }}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "verdaccio.fullname" . }}
+  labels:
+  {{- include "verdaccio.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "verdaccio.fullname" . }}
+  {{- with .Values.autoscaler }}
+  minReplicas: {{ .minReplicas }}
+  maxReplicas: {{ .maxReplicas }}
+  metrics:
+    {{- include "tplvalues.render" (dict "value" .metrics "context" $) | nindent 4 }}
+  {{- end }}
+{{- end }}
