@@ -60,7 +60,16 @@ podLabels: {}
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 podAnnotations: {}
 
+## Only used when `autoscaler.enabled != true`
 replicaCount: 1
+
+## HorizontalPodAutoscaler configuration
+## Ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
+autoscaler:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  metrics: []
 
 resources: {}
   # requests:
