@@ -3,6 +3,33 @@ entries:
   verdaccio-gke-charts:
   - apiVersion: v2
     appVersion: 5.1.6
+    created: "2021-10-25T20:24:08.642773548Z"
+    description: A lightweight, private NPM proxy registry for GKE
+    digest: c3a1584cc345cabb530c4260d7bbfd0ce5b8062243be0e08108462a6ec12d6f8
+    home: https://xlts-dev.github.io/verdaccio-gke-charts/
+    icon: https://cdn.verdaccio.dev/logos/default.png
+    keywords:
+    - npm
+    - registry
+    - yarn
+    - pnpm
+    - javascript
+    - nodejs
+    maintainers:
+    - email: michael@xlts.dev
+      name: splaktar
+    - email: ed@xlts.dev
+      name: edclement
+    name: verdaccio-gke-charts
+    sources:
+    - https://verdaccio.org
+    - https://github.com/verdaccio/verdaccio
+    - https://github.com/xlts-dev/verdaccio-gke-charts
+    urls:
+    - https://github.com/xlts-dev/verdaccio-gke-charts/releases/download/verdaccio-gke-charts-0.1.5/verdaccio-gke-charts-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 5.1.6
     created: "2021-10-22T21:35:43.893725933Z"
     description: A lightweight, private NPM proxy registry for GKE
     digest: c63545d0894ce06f5ce34f38252dd0702ac6a50a0b41599d10f30c130405e739
@@ -170,4 +197,4 @@ entries:
     urls:
     - https://github.com/xlts-dev/verdaccio-gke-charts/releases/download/verdaccio-gke-charts-0.0.3/verdaccio-gke-charts-0.0.3.tgz
     version: 0.0.3
-generated: "2021-10-22T21:35:43.893747334Z"
+generated: "2021-10-25T20:24:08.642806148Z"
