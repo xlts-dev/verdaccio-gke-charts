@@ -6,6 +6,12 @@ metadata:
     {{- include "verdaccio.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.autoscaler.enabled | ternary .Values.autoscaler.minReplicas .Values.replicaCount }}
+  # Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for
+  # it to be considered available. GCP recommends setting this to "60" when using a container native ingress load
+  # balancer to avoid 502 errors when endpoints (nodes/pods) are being spun up. Based on testing, k8s will not start
+  # terminating old pods during a rolling update until this 60 second period of continuous readiness has lapsed.
+  # Refer to: https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing#align_rollouts
+  minReadySeconds: 60
   selector:
     matchLabels:
       {{- include "verdaccio.selectorLabels" . | nindent 6 }}
@@ -15,6 +21,11 @@ spec:
     rollingUpdate: null
     {{- else }}
     type: RollingUpdate
+    rollingUpdate:
+      # The maximum number of pods that can be unavailable during a rolling update. Setting this value higher than zero
+      # seems to help trigger 502 errors from the GCP container native ingress load balancer.
+      # Refer to: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#rollingupdatedeployment-v1-apps
+      maxUnavailable: 0
     {{- end }}
   template:
     metadata:
@@ -24,6 +35,11 @@ spec:
       labels:
         {{- include "verdaccio.podLabels" . | nindent 8 }}
     spec:
+      # This is set 10 seconds longer then the `lifecycle.preStop.exec` sleep command. The default value is 30 seconds.
+      # If this value is lower than the sleep value the kubelet will send a `SIGKILL` signal before the container is
+      # allowed to gracefully shutdown (hard stopping the container after 30 seconds).
+      # Refer to: https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing#align_rollouts
+      terminationGracePeriodSeconds: 100
       serviceAccountName: {{ include "verdaccio.serviceAccountName" . }}
       {{- include "verdaccio.imagePullSecrets" . | nindent 6 }}
       {{- with .Values.podSecurityContext }}
@@ -38,6 +54,18 @@ spec:
         - name: {{ template "verdaccio.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                # GCP recommends setting this sleep value to "60" seconds when using a container native ingress load
+                # balancer to avoid 502 errors when endpoints (nodes/pods) are being torn down. However, during testing,
+                # even with a 60 second sleep added before the `SIGTERM` signal is sent to the container, 502 errors
+                # continued (albeit with less frequency/duration). Setting this value to a longer 90 second period
+                # seemed to better resolve the 502 issues that occur during rolling updates of the deployment. This
+                # means that a container will continue to run and handle requests for 90 seconds after k8s triggers the
+                # pod termination sequence.
+                # Refer to: https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing#traffic_does_not_reach_endpoints
+                command: ["sleep", "90"]
           ports:
             - containerPort: 4873
               name: verdaccio-port
