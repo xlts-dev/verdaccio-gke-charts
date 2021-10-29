@@ -52,6 +52,10 @@ affinity: {}
 ## Tolerations for nodes
 tolerations: []
 
+## Topology spread constraints for pods, only available in k8s 1.19 or higher.
+## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
+topologySpreadConstraints: []
+
 ## Additional pod labels
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
