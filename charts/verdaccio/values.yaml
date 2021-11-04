@@ -86,6 +86,7 @@ resources: {}
 ingress:
   enabled: false
   className: ""
+  defaultBackend: null
   paths:
     - /*
   # Use this to define, ALB ingress's actions annotation based routing. Ex: for ssl-redirect
